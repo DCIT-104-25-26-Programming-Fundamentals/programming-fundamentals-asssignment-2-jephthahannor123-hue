@@ -71,5 +71,147 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <limits>
 using namespace std;
 
+// ---------------------------------------------------------
+// Arithmetic operation functions
+// ---------------------------------------------------------
+double add(double a, double b) {
+    return a + b;
+}
+
+double subtract(double a, double b) {
+    return a - b;
+}
+
+double multiply(double a, double b) {
+    return a * b;
+}
+
+bool divide(double a, double b, double& result) {
+    if (b == 0) {
+        return false; // signals error to caller
+    }
+    result = a / b;
+    return true;
+}
+
+bool modulus(double a, double b, double& result) {
+    if (b == 0) {
+        return false;
+    }
+    result = fmod(a, b); // fmod handles double remainders
+    return true;
+}
+
+double exponentiate(double base, double exponent) {
+    return pow(base, exponent);
+}
+
+// ---------------------------------------------------------
+// Helper: get a number from the user with a given prompt
+// ---------------------------------------------------------
+double getNumber(const string& prompt) {
+    double value;
+    cout << prompt;
+    while (!(cin >> value)) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Invalid number. " << prompt;
+    }
+    return value;
+}
+
+// ---------------------------------------------------------
+// Menu display
+// ---------------------------------------------------------
+void printMenu() {
+    cout << "============================\n";
+    cout << "     SIMPLE CALCULATOR\n";
+    cout << "============================\n";
+    cout << "1. Addition\n";
+    cout << "2. Subtraction\n";
+    cout << "3. Multiplication\n";
+    cout << "4. Division\n";
+    cout << "5. Modulus\n";
+    cout << "6. Exponentiation\n";
+    cout << "7. Quit\n";
+    cout << "Select an operation (1-7): ";
+}
+
+// ---------------------------------------------------------
+// Main program loop
+// ---------------------------------------------------------
+int main() {
+    int choice;
+    bool running = true;
+
+    cout << fixed << setprecision(2);
+
+    while (running) {
+        printMenu();
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter a number between 1 and 7.\n\n";
+            continue;
+        }
+
+        if (choice == 7) {
+            cout << "Goodbye!\n";
+            running = false;
+            continue;
+        }
+
+        if (choice < 1 || choice > 6) {
+            cout << "Invalid choice. Please enter a number between 1 and 7.\n\n";
+            continue;
+        }
+
+        double a = getNumber("Enter first number : ");
+        double b = getNumber("Enter second number: ");
+        double result;
+        char op = ' ';
+        bool ok = true;
+
+        switch (choice) {
+            case 1:
+                result = add(a, b);
+                op = '+';
+                break;
+            case 2:
+                result = subtract(a, b);
+                op = '-';
+                break;
+            case 3:
+                result = multiply(a, b);
+                op = '*';
+                break;
+            case 4:
+                ok = divide(a, b, result);
+                op = '/';
+                if (!ok) cout << "Error: Cannot divide by zero.\n";
+                break;
+            case 5:
+                ok = modulus(a, b, result);
+                op = '%';
+                if (!ok) cout << "Error: Cannot divide by zero.\n";
+                break;
+            case 6:
+                result = exponentiate(a, b);
+                op = '^';
+                break;
+        }
+
+        if (ok) {
+            cout << "Result: " << a << " " << op << " " << b
+                 << " = " << result << "\n";
+        }
+
+        cout << "\n";
+    }
+
+    return 0;
+}
